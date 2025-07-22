@@ -14,8 +14,8 @@ const Navbar = () => {
 
   useEffect(() => {
     setMounted(true);
-    
-    if(!localStorage.getItem('theme')) localStorage.setItem('theme' , 'dark');
+
+    if (!localStorage.getItem('theme')) localStorage.setItem('theme', 'dark');
 
     // Check for saved theme preference
     if (typeof window !== 'undefined') {
@@ -36,26 +36,26 @@ const Navbar = () => {
 
     // Initial scroll position check
     handleScroll();
-    
+
     window.addEventListener('scroll', handleScroll);
-    
+
     // Ensure navbar is visible by forcing a reflow
     const navbarElement = document.querySelector('.navbar');
     if (navbarElement) {
       // Force a reflow
       void navbarElement.offsetHeight;
-      
+
       // Add a class to ensure visibility
       navbarElement.classList.add('navbar-visible');
     }
-    
+
     // Check if Firebase is initialized
     try {
       const auth = getAuth();
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         setUser(currentUser);
       });
-      
+
       return () => {
         window.removeEventListener('scroll', handleScroll);
         unsubscribe();
@@ -111,9 +111,9 @@ const Navbar = () => {
           <a href="/" className="logo flex items-center space-x-2">
             {/* <img src="/logg.svg" alt="EventMappr Logo" className="block dark:hidden h-8 w-auto" /> */}
 
-            <img src={isDarkMode?'/loggd.svg' : '/logg.svg'} alt="EventMappr Logo" className="hidden dark:block h-8 w-auto" style={{ width: '200px' }}/>
+            <img src={isDarkMode ? '/loggd.svg' : '/logg.svg'} alt="EventMappr Logo" className="hidden dark:block h-8 w-auto" style={{ width: '200px' }} />
 
-            <img src="/loggd.svg" alt="EventMappr Logo" className="h-8 w-auto" style={{ width: '400px'}} />
+            <img src="/loggd.svg" alt="EventMappr Logo" className="h-8 w-auto" style={{ width: '400px' }} />
 
           </a>
         </Link>
@@ -211,12 +211,12 @@ const Navbar = () => {
           height: 100%;
           backdrop-filter: blur(var(--navbar-blur));
           -webkit-backdrop-filter: blur(var(--navbar-blur));
-          background: ${isDarkMode 
-            ? 'linear-gradient(to bottom, rgba(18, 18, 24, 0.75), rgba(18, 18, 24, 0.65))'
-            : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.65))'};
-          border-bottom: 1px solid ${isDarkMode 
-            ? 'rgba(255, 255, 255, 0.05)' 
-            : 'rgba(0, 0, 0, 0.05)'};
+          background: ${isDarkMode
+          ? 'linear-gradient(to bottom, rgba(18, 18, 24, 0.75), rgba(18, 18, 24, 0.65))'
+          : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.65))'};
+          border-bottom: 1px solid ${isDarkMode
+          ? 'rgba(255, 255, 255, 0.05)'
+          : 'rgba(0, 0, 0, 0.05)'};
           z-index: -1;
         }
         
@@ -229,12 +229,12 @@ const Navbar = () => {
         }
         
         .navbar.scrolled .navbar-blur {
-          box-shadow: 0 4px 30px ${isDarkMode 
-            ? 'rgba(0, 0, 0, 0.3)' 
-            : 'rgba(0, 0, 0, 0.1)'};
-          background: ${isDarkMode 
-            ? 'linear-gradient(to bottom, rgba(18, 18, 24, 0.8), rgba(18, 18, 24, 0.75))'
-            : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.75))'};
+          box-shadow: 0 4px 30px ${isDarkMode
+          ? 'rgba(0, 0, 0, 0.3)'
+          : 'rgba(0, 0, 0, 0.1)'};
+          background: ${isDarkMode
+          ? 'linear-gradient(to bottom, rgba(18, 18, 24, 0.8), rgba(18, 18, 24, 0.75))'
+          : 'linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.75))'};
         }
         
         .navbar-container {
@@ -253,6 +253,9 @@ const Navbar = () => {
           position: relative;
           z-index: 2;
           text-decoration: none;
+          flex-shrink: 0;
+  max-width: 160px;
+  overflow: hidden;
         }
         
         .logo-icon {
@@ -270,9 +273,9 @@ const Navbar = () => {
           font-size: 1.25rem;
           font-weight: 700;
           color: var(--text);
-          background: ${isDarkMode 
-            ? 'linear-gradient(to right, #fff, #ccc)' 
-            : 'linear-gradient(to right, var(--primary), var(--primary-dark))'};
+          background: ${isDarkMode
+          ? 'linear-gradient(to right, #fff, #ccc)'
+          : 'linear-gradient(to right, var(--primary), var(--primary-dark))'};
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -289,13 +292,15 @@ const Navbar = () => {
         }
         
         .nav-links {
-          display: flex;
-          align-items: center;
-          list-style: none;
-          margin: 0;
-          padding: 0;
-          position: relative;
+           display: flex;
+           align-items: center;
+           list-style: none;
+           margin: 0;
+           padding: 0;
+           position: relative;
           z-index: 2;
+          
+  
         }
         
         .nav-links li {
@@ -360,18 +365,18 @@ const Navbar = () => {
           align-items: center;
           justify-content: center;
           transition: all 0.3s ease;
-          background-color: ${isDarkMode 
-            ? 'rgba(255, 255, 255, 0.1)' 
-            : 'rgba(0, 0, 0, 0.05)'};
+          background-color: ${isDarkMode
+          ? 'rgba(255, 255, 255, 0.1)'
+          : 'rgba(0, 0, 0, 0.05)'};
           backdrop-filter: blur(5px);
           -webkit-backdrop-filter: blur(5px);
         }
         
         .theme-btn:hover {
           transform: rotate(15deg);
-          background-color: ${isDarkMode 
-            ? 'rgba(255, 255, 255, 0.2)' 
-            : 'rgba(0, 0, 0, 0.1)'};
+          background-color: ${isDarkMode
+          ? 'rgba(255, 255, 255, 0.2)'
+          : 'rgba(0, 0, 0, 0.1)'};
         }
         
         .btn-sign-in {
@@ -490,9 +495,9 @@ const Navbar = () => {
             height: 100vh;
             flex-direction: column;
             justify-content: center;
-            background: ${isDarkMode 
-              ? 'rgba(18, 18, 24, 0.95)' 
-              : 'rgba(255, 255, 255, 0.95)'};
+            background: ${isDarkMode
+          ? 'rgba(18, 18, 24, 0.95)'
+          : 'rgba(255, 255, 255, 0.95)'};
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             padding: 2rem;
