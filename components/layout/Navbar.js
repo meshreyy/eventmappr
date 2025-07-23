@@ -107,15 +107,14 @@ const Navbar = () => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isDarkMode ? 'dark' : ''}`}>
       <div className="navbar-blur"></div>
       <div className="container navbar-container">
-        <Link href={ROUTES.HOME} legacyBehavior>
-          <a href="/" className="logo flex items-center space-x-2">
+        <Link href={ROUTES.HOME} >
+           href="/" className="logo flex items-center space-x-2"
             {/* <img src="/logg.svg" alt="EventMappr Logo" className="block dark:hidden h-8 w-auto" /> */}
 
             <img src={isDarkMode ? '/loggd.svg' : '/logg.svg'} alt="EventMappr Logo" className="hidden dark:block h-8 w-auto" style={{ width: '200px' }} />
 
             <img src="/loggd.svg" alt="EventMappr Logo" className="h-8 w-auto" style={{ width: '400px' }} />
-
-          </a>
+          
         </Link>
 
 
@@ -128,25 +127,25 @@ const Navbar = () => {
         <ul className={`nav-links ${isOpen ? 'active' : ''}`}>
           {NAV_ITEMS.map((item, index) => (
             <li key={index}>
-              <Link href={item.path} legacyBehavior>
-                <a className={router.pathname === item.path ? 'active' : ''}>
+              <Link href={item.path}>
+                 className={router.pathname === item.path ? 'active' : ''}
                   {item.name}
-                </a>
+                
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/currency-converter" legacyBehavior>
-              <a className={router.pathname === '/currency-converter' ? 'active' : ''}>
+            <Link href="/currency-converter" >
+               className={router.pathname === '/currency-converter' ? 'active' : ''}
                 <i className="fas fa-coins" style={{ marginRight: '6px' }} /> Currency Converter
-              </a>
+              
             </Link>
           </li>
           <li>
-            <Link href="/nearby" legacyBehavior>
-              <a className={router.pathname === '/nearby' ? 'active' : ''}>
+            <Link href="/nearby" >
+              className={router.pathname === '/nearby' ? 'active' : ''}
                 Nearby
-              </a>
+              
             </Link>
           </li>
           <li className="theme-toggle">
@@ -157,10 +156,10 @@ const Navbar = () => {
           {user ? (
             <>
               <li className="profile-link">
-                <Link href={ROUTES.PROFILE} legacyBehavior>
-                  <a className={router.pathname === ROUTES.PROFILE ? 'active' : ''}>
+                <Link href={ROUTES.PROFILE}>
+                   className={router.pathname === ROUTES.PROFILE ? 'active' : ''}
                     Profile
-                  </a>
+                  
                 </Link>
               </li>
               <li>
@@ -298,7 +297,7 @@ const Navbar = () => {
            margin: 0;
            padding: 0;
            position: relative;
-          z-index: 2;
+         z-index: 2;
           
   
         }

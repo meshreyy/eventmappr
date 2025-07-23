@@ -22,8 +22,8 @@ const Footer = () => {
             <ul className="footer-links">
               {FOOTER_NAV_ITEMS.map((item, index) => (
                 <li key={index}>
-                  <Link href={item.path} legacyBehavior>
-                    <a>{item.name}</a>
+                  <Link href={item.path}>
+                    {item.name}
                   </Link>
                 </li>
               ))}
@@ -34,17 +34,17 @@ const Footer = () => {
             <h3 className="footer-title">Legal</h3>
             <ul className="footer-links">
               <li>
-                <Link href="/privacy" legacyBehavior>
-                  <a>Privacy Policy</a>
+                <Link href="/privacy" >
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" legacyBehavior>
+                <Link href="/terms">
                   <a>Terms of Service</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cookies" legacyBehavior>
+                <Link href="/cookies">
                   <a>Cookie Policy</a>
                 </Link>
               </li>

@@ -32,9 +32,10 @@ const Button = ({ children, onClick, type = 'submit', className = '' }) => (
       }
       .btn-ghost {
         background: none;
-        color: #4c66f5;
+        color: #ffffffff;
         border: 2px solid #4c66f5;
         box-shadow: none;
+        opacity: 1;
         transition: color 0.3s ease, background 0.3s ease;
       }
       .btn-ghost:hover {
@@ -364,7 +365,7 @@ const ContactPage = () => {
         }
         html.dark-mode .btn-ghost:hover {
           background: #5a7eff;
-          color: #0f0f1a;
+          color: #ffffffff;
         }
       `}</style>
 
