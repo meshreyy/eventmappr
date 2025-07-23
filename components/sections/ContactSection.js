@@ -338,7 +338,7 @@ const ContactSection = () => {
             </form>
           </div>
         </div>
-      </div>
+      
       {/* Office Location Map Section */}
       <ClientOnly>
         {markerIcon && (
@@ -367,6 +367,7 @@ const ContactSection = () => {
           </div>
         )}
       </ClientOnly>
+  
 
       <style jsx>{`
         .contact-section {

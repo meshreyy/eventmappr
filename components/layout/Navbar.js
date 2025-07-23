@@ -107,7 +107,7 @@ const Navbar = () => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isDarkMode ? 'dark' : ''}`}>
       <div className="navbar-blur"></div>
       <div className="container navbar-container">
-        <Link href={ROUTES.HOME} >
+        <Link href={ROUTES.HOME} legacyBehavior>
            href="/" className="logo flex items-center space-x-2"
             {/* <img src="/logg.svg" alt="EventMappr Logo" className="block dark:hidden h-8 w-auto" /> */}
 
@@ -127,7 +127,7 @@ const Navbar = () => {
         <ul className={`nav-links ${isOpen ? 'active' : ''}`}>
           {NAV_ITEMS.map((item, index) => (
             <li key={index}>
-              <Link href={item.path}>
+              <Link href={item.path} legacyBehavior>
                  className={router.pathname === item.path ? 'active' : ''}
                   {item.name}
                 
@@ -135,14 +135,14 @@ const Navbar = () => {
             </li>
           ))}
           <li>
-            <Link href="/currency-converter" >
+            <Link href="/currency-converter" legacyBehavior>
                className={router.pathname === '/currency-converter' ? 'active' : ''}
                 <i className="fas fa-coins" style={{ marginRight: '6px' }} /> Currency Converter
               
             </Link>
           </li>
           <li>
-            <Link href="/nearby" >
+            <Link href="/nearby" legacyBehavior>
               className={router.pathname === '/nearby' ? 'active' : ''}
                 Nearby
               
@@ -156,7 +156,7 @@ const Navbar = () => {
           {user ? (
             <>
               <li className="profile-link">
-                <Link href={ROUTES.PROFILE}>
+                <Link href={ROUTES.PROFILE} legacyBehavior>
                    className={router.pathname === ROUTES.PROFILE ? 'active' : ''}
                     Profile
                   
@@ -184,7 +184,6 @@ const Navbar = () => {
           )}
         </ul>
       </div>
-
       <style jsx>{`
         .navbar {
           position: fixed;

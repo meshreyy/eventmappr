@@ -38,7 +38,6 @@ const HowItWorksPage = () => {
         <title>How It Works | EventMappr</title>
         <meta name="description" content="Learn how to use EventMappr to discover and share local events in your community." />
       </Head>
-      
       <Layout>
         <div className="how-it-works-page">
           <div className="how-it-works-header">
@@ -115,10 +114,10 @@ const HowItWorksPage = () => {
               <h2>Ready to Get Started?</h2>
               <p>Join thousands of users who are already discovering and sharing events in their communities.</p>
               <div className="cta-buttons">
-                <Link href="/explore">
+                <Link href="/explore" legacyBehavior>
                   <span className="cta-btn primary-btn">Explore the Map</span>
                 </Link>
-                <Link href="/auth">
+                <Link href="/auth" legacyBehavior>
                   <span className="cta-btn secondary-btn">Create Account</span>
                 </Link>
               </div>
@@ -126,7 +125,6 @@ const HowItWorksPage = () => {
           </div>
         </div>
       </Layout>
-      
       <style jsx>{`
         .how-it-works-page {
           min-height: 100vh;

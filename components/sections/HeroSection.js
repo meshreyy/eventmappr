@@ -68,7 +68,6 @@ const HeroSection = () => {
         <div className="hero-shape shape-2"></div>
         <div className="hero-shape shape-3"></div>
       </div>
-      
       <div className="container hero-container">
         <div className="hero-content">
           <h1 className="hero-title">{typedText}</h1>
@@ -77,12 +76,12 @@ const HeroSection = () => {
             Connect with people who share your interests and never miss out on what's happening nearby.
           </p>
           <div className="hero-buttons" data-aos="fade-up" data-aos-delay="600">
-            <Link href={ROUTES.MAP}>
+            <Link href={ROUTES.MAP} legacyBehavior>
               <span className="glass-btn primary-glass">
                 <span className="btn-text">Explore Map</span>
               </span>
             </Link>
-            <Link href={ROUTES.ABOUT}>
+            <Link href={ROUTES.ABOUT} legacyBehavior>
               <span className="glass-btn secondary-glass">
                 <span className="btn-text">Learn More</span>
               </span>
@@ -125,7 +124,6 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      
       <style jsx>{`
         .hero-section {
           padding: 8rem 0 4rem;

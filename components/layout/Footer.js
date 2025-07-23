@@ -22,7 +22,7 @@ const Footer = () => {
             <ul className="footer-links">
               {FOOTER_NAV_ITEMS.map((item, index) => (
                 <li key={index}>
-                  <Link href={item.path}>
+                  <Link href={item.path} legacyBehavior>
                     {item.name}
                   </Link>
                 </li>
@@ -34,17 +34,17 @@ const Footer = () => {
             <h3 className="footer-title">Legal</h3>
             <ul className="footer-links">
               <li>
-                <Link href="/privacy" >
+                <Link href="/privacy" legacyBehavior>
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms">
+                <Link href="/terms" legacyBehavior>
                   <a>Terms of Service</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cookies">
+                <Link href="/cookies" legacyBehavior>
                   <a>Cookie Policy</a>
                 </Link>
               </li>
@@ -86,7 +86,6 @@ const Footer = () => {
           <p>Made with ❤️ for local communities</p>
         </div>
       </div>
-
       <style jsx>{`
         .footer {
           background-color: var(--background-alt);

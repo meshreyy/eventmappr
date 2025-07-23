@@ -17,7 +17,6 @@ const FeaturesPage = () => {
         <title>Features | EventMappr</title>
         <meta name="description" content="Discover all the powerful features that make EventMappr the best platform for finding and sharing local events." />
       </Head>
-      
       <Layout>
         <div className="features-page">
           <div className="features-header" data-aos="fade-up">
@@ -77,10 +76,10 @@ const FeaturesPage = () => {
                 <h2>Ready to explore events near you?</h2>
                 <p>Join thousands of users who are discovering local events every day with EventMappr.</p>
                 <div className="cta-buttons">
-                  <Link href="/explore">
+                  <Link href="/explore" legacyBehavior>
                     <span className="cta-btn primary-btn">Open Map</span>
                   </Link>
-                  <Link href="/how-it-works">
+                  <Link href="/how-it-works" legacyBehavior>
                     <span className="cta-btn secondary-btn">Learn How It Works</span>
                   </Link>
                 </div>
@@ -89,7 +88,6 @@ const FeaturesPage = () => {
           </div>
         </div>
       </Layout>
-      
       <style jsx>{`
         .features-page {
           min-height: 100vh;
