@@ -40,10 +40,12 @@ export default function TouristPlacesMap({
     const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchInput)}&format=json`);
     const results = await res.json();
 
-    if (results && results.length > 0) {
-      const result = results[0];
-      setSearchPosition([parseFloat(result.lat), parseFloat(result.lon)]);
-    }
+   if (results && results.length > 0) {
+  const result = results[0];
+  setSearchPosition([parseFloat(result.lat), parseFloat(result.lon)]);
+}
+const [searchLocation, setSearchLocation] = useState(null); // 👉 for API use (lat/lng object)
+
   };
 
   return (

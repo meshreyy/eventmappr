@@ -13,6 +13,8 @@ export default function NearbyPage() {
   () => import('../components/map/NearbyPlaces'),
   { ssr: false }  // ✅ disables server-side rendering for NearbyPlaces
 );
+const SearchBox = dynamic(() => import('../components/map/SearchBox'), { ssr: false });
+
 
   const TileLayer = dynamic(() =>
     import('react-leaflet').then(mod => mod.TileLayer),
@@ -142,6 +144,7 @@ export default function NearbyPage() {
                 attribution='&copy; OpenStreetMap contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              <SearchBox onSearch={(coords) => setUserLocation(coords)} />
               <NearbyPlaces userLocation={userLocation} />
             </MapContainer>
           </div>

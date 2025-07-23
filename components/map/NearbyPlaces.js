@@ -46,17 +46,22 @@ export default function NearbyPlaces({ userLocation, radius = 1200 }) {
 
     fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
-      body: query,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ data: query }).toString(),
     })
+
+
       .then((res) => res.json())
       .then((data) => {
-        console.log('Overpass data:', data);
         setLoading(false);
+
+        // 👇 ADD LOG HERE - this is where you see all the raw elements
+        console.log('Raw Overpass Elements:', data.elements);
+
         if (data?.elements) {
-          const filtered = data.elements.filter((el) =>
-            (el.tags?.amenity === 'restaurant') || (el.tags?.tourism === 'hotel')
-          );
+          const filtered = data.elements.filter((el) => (
+            el.tags?.amenity === 'restaurant' || el.tags?.tourism === 'hotel'
+          ));
           setPlaces(filtered);
         } else {
           setPlaces([]);
@@ -67,6 +72,7 @@ export default function NearbyPlaces({ userLocation, radius = 1200 }) {
         setError('Failed to fetch nearby places.');
       });
   }, [userLocation, radius]);
+
 
   // ✅ Render guard
   if (!userLocation || loading || error || !icons) return null;

@@ -6,6 +6,7 @@ import { EVENT_CATEGORIES } from '../../utils/routes';
 import GpsButton from '../ui/GpsButton'
 import NearbyPlaces from './NearbyPlaces';
 import NearbyPlacesPanel from './NearbyPlacesPanel';
+import SearchBox from '../components/map/SearchBox';
 
 function LocationMarker() {
   const [position, setPosition] = useState(null);
@@ -440,7 +441,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
 
           {/* Nearby Restaurants & Hotels Markers */}
           {showNearby && userLocation && (
-            <NearbyPlaces userLocation={userLocation} />
+            <NearbyPlaces userLocation={userLocation} radius={3000}/>
           )}
 
           {/* Marker Legend */}
@@ -476,6 +477,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
               </span>
             </div>
           )}
+          <SearchBox />
         </MapContainer>
       </div>
 
