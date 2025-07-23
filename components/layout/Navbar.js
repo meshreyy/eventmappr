@@ -107,14 +107,14 @@ const Navbar = () => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''} ${isDarkMode ? 'dark' : ''}`}>
       <div className="navbar-blur"></div>
       <div className="container navbar-container">
-        <Link href={ROUTES.HOME} legacyBehavior>
-           href="/" className="logo flex items-center space-x-2"
+        <Link href={ROUTES.HOME}>
+          <span className="logo flex items-center space-x-2">
             {/* <img src="/logg.svg" alt="EventMappr Logo" className="block dark:hidden h-8 w-auto" /> */}
 
             <img src={isDarkMode ? '/loggd.svg' : '/logg.svg'} alt="EventMappr Logo" className="hidden dark:block h-8 w-auto" style={{ width: '200px' }} />
 
             <img src="/loggd.svg" alt="EventMappr Logo" className="h-8 w-auto" style={{ width: '400px' }} />
-          
+          </span>
         </Link>
 
 
@@ -125,41 +125,51 @@ const Navbar = () => {
         </div>
 
         <ul className={`nav-links ${isOpen ? 'active' : ''}`}>
+          {/* Navigation Items from utils */}
           {NAV_ITEMS.map((item, index) => (
             <li key={index}>
-              <Link href={item.path} legacyBehavior>
-                 className={router.pathname === item.path ? 'active' : ''}
+              <Link href={item.path}>
+                <span className={router.pathname === item.path ? 'active' : ''}>
                   {item.name}
-                
+                </span>
               </Link>
             </li>
           ))}
+
+          {/* Currency Converter */}
           <li>
-            <Link href="/currency-converter" legacyBehavior>
-               className={router.pathname === '/currency-converter' ? 'active' : ''}
-                <i className="fas fa-coins" style={{ marginRight: '6px' }} /> Currency Converter
-              
+            <Link href="/currency-converter">
+              <span className={router.pathname === '/currency-converter' ? 'active' : ''}>
+                <i className="fas fa-coins" style={{ marginRight: '6px' }} />
+                Currency Converter
+              </span>
             </Link>
           </li>
+
+          {/* Nearby */}
           <li>
-            <Link href="/nearby" legacyBehavior>
-              className={router.pathname === '/nearby' ? 'active' : ''}
+            <Link href="/nearby">
+              <span className={router.pathname === '/nearby' ? 'active' : ''}>
                 Nearby
-              
+              </span>
             </Link>
           </li>
+
+          {/* Theme toggle */}
           <li className="theme-toggle">
             <button onClick={toggleTheme} aria-label="Toggle theme" className="theme-btn">
               {isDarkMode ? '☀️' : '🌙'}
             </button>
           </li>
+
+          {/* Conditional Auth Links */}
           {user ? (
             <>
               <li className="profile-link">
-                <Link href={ROUTES.PROFILE} legacyBehavior>
-                   className={router.pathname === ROUTES.PROFILE ? 'active' : ''}
+                <Link href={ROUTES.PROFILE}>
+                  <span className={router.pathname === ROUTES.PROFILE ? 'active' : ''}>
                     Profile
-                  
+                  </span>
                 </Link>
               </li>
               <li>
@@ -183,6 +193,7 @@ const Navbar = () => {
             </li>
           )}
         </ul>
+
       </div>
       <style jsx>{`
         .navbar {

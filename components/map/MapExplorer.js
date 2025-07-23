@@ -7,6 +7,31 @@ import GpsButton from '../ui/GpsButton'
 import NearbyPlaces from './NearbyPlaces';
 import NearbyPlacesPanel from './NearbyPlacesPanel';
 
+function LocationMarker() {
+  const [position, setPosition] = useState(null);
+  const map = useMapEvents({
+    locationfound(e) {
+      setPosition(e.latlng);
+      map.flyTo(e.latlng, map.getZoom());
+    },
+    locationerror(e) {
+      console.warn('Location error:', e);
+    }
+  });
+
+  useEffect(() => {
+    map.locate({ setView: true, maxZoom: 15 });
+  }, [map]);
+
+  if (!position) return null;
+
+  return (
+    <Marker position={position}>
+      <Popup>You are here</Popup>
+    </Marker>
+  );
+}
+
 const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticated }) => {
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -69,8 +94,8 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
     setShowNearbyPanel(false);
   };
 
-// Duplicate state declarations removed (already declared above)
-
+  // Duplicate state declarations removed (already declared above)
+  
   // Fix Leaflet default icon issue
   useEffect(() => {
     delete L.Icon.Default.prototype._getIconUrl;
@@ -84,14 +109,14 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
   // Handle map creation and setup click handler
   const handleMapCreated = (map) => {
     mapRef.current = map;
-    
+
     // Add click handler directly to the map
     map.on('click', (e) => {
       if (!isAuthenticated) {
         alert('Please sign in to add events');
         return;
       }
-      
+
       const { lat, lng } = e.latlng;
       setNewEvent(prev => ({
         ...prev,
@@ -119,20 +144,20 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!newEvent.title || !newEvent.category || !newEvent.lat || !newEvent.lng) {
       alert('Please fill in all required fields and select a location on the map.');
       return;
     }
-    
+
     const event = {
       id: Date.now().toString(),
       ...newEvent,
       createdAt: new Date().toISOString(),
     };
-    
+
     onEventAdded(event);
-    
+
     // Reset form
     setNewEvent({
       title: '',
@@ -145,7 +170,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
       lat: null,
       lng: null,
     });
-    
+
     setShowForm(false);
   };
 
@@ -154,7 +179,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
       alert("Geolocation is not supported by your browser.");
       return;
     }
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const userLat = position.coords.latitude;
@@ -177,7 +202,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
 
   const changeMapView = (view) => {
     setMapView(view);
-    
+
     if (mapRef.current) {
       // Change the tile layer based on the selected view
       const tileLayer = document.querySelector('.leaflet-tile-pane');
@@ -202,9 +227,9 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
       Sports: { color: '#FF9800', emoji: '🏆' },
       Education: { color: '#3F51B5', emoji: '📚' },
     };
-    
+
     const iconInfo = iconMapping[category] || { color: '#333333', emoji: '📌' };
-    
+
     return L.divIcon({
       html: `<div style="background-color: ${iconInfo.color}; color: white; border-radius: 50%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 14px;">${iconInfo.emoji}</div>`,
       className: `event-marker ${category.toLowerCase()}-marker`,
@@ -219,7 +244,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
     .filter(event => filters[event.category])
     .filter(event => {
       if (!searchQuery) return true;
-      
+
       const query = searchQuery.toLowerCase();
       return (
         event.title.toLowerCase().includes(query) ||
@@ -257,17 +282,17 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
         if (el) {
           const elementPosition = el.getBoundingClientRect().top;
           const screenPosition = window.innerHeight / element.threshold;
-          
+
           if (elementPosition < screenPosition) {
             el.classList.add('animate');
           }
         }
       });
     };
-    
+
     window.addEventListener('scroll', animateOnScroll);
     animateOnScroll(); // Run once on load
-    
+
     return () => {
       window.removeEventListener('scroll', animateOnScroll);
     };
@@ -288,7 +313,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
             <span className="btn-icon">📍</span>
             <span className="btn-text">Find Nearby</span>
           </button>
-          <button className={"btn-nearby" + (showNearby ? ' active' : '')} style={{marginLeft:'0.5rem'}} onClick={handleShowNearby}>
+          <button className={"btn-nearby" + (showNearby ? ' active' : '')} style={{ marginLeft: '0.5rem' }} onClick={handleShowNearby}>
             <span className="btn-icon">🍽️🏨</span>
             <span className="btn-text">{showNearby ? 'Hide' : 'Show'} Nearby Restaurants & Hotels</span>
           </button>
@@ -297,7 +322,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
           )}
           {nearbyError && <span style={{ color: 'red', marginLeft: '1rem' }}>{nearbyError}</span>}
         </div>
-        
+
         <div className="filter-controls">
           <div className="filter-title">Filter by category:</div>
           <div className="filter-options">
@@ -324,17 +349,17 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
             ))}
           </div>
         </div>
-        
+
         <div className="map-view-controls">
           <div className="view-title">Map Style:</div>
           <div className="view-options">
-            <button 
+            <button
               className={`view-option ${mapView === 'standard' ? 'active' : ''}`}
               onClick={() => changeMapView('standard')}
             >
               Standard
             </button>
-            <button 
+            <button
               className={`view-option ${mapView === 'satellite' ? 'active' : ''}`}
               onClick={() => changeMapView('satellite')}
             >
@@ -343,16 +368,16 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
           </div>
         </div>
       </div>
-      
-      <div className="map-container">
-        <MapContainer 
-          center={[40.7128, -74.0060]} 
-          zoom={13} 
+
+       <div className="map-container" style={{ flex: 1, position: 'relative' }}>
+        <MapContainer
+          center={[40.7128, -74.0060]}
+          zoom={13}
           style={{ height: "100%", width: "100%" }}
           whenCreated={handleMapCreated}
         >
           <TileLayer
-            url={mapView === 'satellite' 
+            url={mapView === 'satellite'
               ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
               : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             }
@@ -361,10 +386,12 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
               : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }
           />
-          
+          <LocationMarker />
+
+
           {filteredEvents.map(event => (
-            <Marker 
-              key={event.id} 
+            <Marker
+              key={event.id}
               position={[event.lat, event.lng]}
               icon={createIcon(event.category)}
             >
@@ -374,30 +401,30 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
                   <span className={`event-category ${event.category.toLowerCase()}`}>
                     {event.category}
                   </span>
-                  
+
                   {event.date && (
                     <div className="event-date">
                       <span className="popup-label">Date:</span> {event.date}
                       {event.time && <span> at {event.time}</span>}
                     </div>
                   )}
-                  
+
                   <p className="event-description">{event.description}</p>
-                  
+
                   {event.organizer && (
                     <div className="event-organizer">
                       <span className="popup-label">Organizer:</span> {event.organizer}
                     </div>
                   )}
-                  
+
                   {event.contact && (
                     <div className="event-contact">
                       <span className="popup-label">Contact:</span> {event.contact}
                     </div>
                   )}
-                  
+
                   <div className="event-actions">
-                    <button 
+                    <button
                       className="btn-delete"
                       onClick={() => handleDeleteEvent(event.id)}
                     >
@@ -408,8 +435,8 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
               </Popup>
             </Marker>
           ))}
-          
-          <GpsButton/>
+
+          <GpsButton />
 
           {/* Nearby Restaurants & Hotels Markers */}
           {showNearby && userLocation && (
@@ -418,15 +445,40 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
 
           {/* Marker Legend */}
           {showNearby && (
-            <div style={{position:'absolute',bottom:20,right:20,background:'#fff',padding:'8px 14px',borderRadius:8,boxShadow:'0 2px 8px rgba(0,0,0,0.08)',zIndex:1000,fontSize:'0.98rem'}}>
-              <span style={{marginRight:12}}><img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Restaurant" style={{width:22,verticalAlign:'middle',marginRight:4}}/>Restaurant</span>
-              <span><img src="https://cdn-icons-png.flaticon.com/512/139/139899.png" alt="Hotel" style={{width:22,verticalAlign:'middle',marginRight:4}}/>Hotel</span>
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 20,
+                right: 20,
+                background: '#fff',
+                padding: '8px 14px',
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                zIndex: 1000,
+                fontSize: '0.98rem',
+              }}
+            >
+              <span style={{ marginRight: 12 }}>
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
+                  alt="Restaurant"
+                  style={{ width: 22, verticalAlign: 'middle', marginRight: 4 }}
+                />
+                Restaurant
+              </span>
+              <span>
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/139/139899.png"
+                  alt="Hotel"
+                  style={{ width: 22, verticalAlign: 'middle', marginRight: 4 }}
+                />
+                Hotel
+              </span>
             </div>
           )}
-
         </MapContainer>
       </div>
-      
+
       {showForm && (
         <div className="event-form-overlay">
           <div className="event-form-container">
@@ -434,22 +486,22 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
             <form onSubmit={handleFormSubmit} className="event-form">
               <div className="form-group">
                 <label htmlFor="title">Event Title *</label>
-                <input 
-                  type="text" 
-                  id="title" 
-                  name="title" 
+                <input
+                  type="text"
+                  id="title"
+                  name="title"
                   value={newEvent.title}
                   onChange={handleInputChange}
                   required
                   placeholder="Enter event title"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="category">Category *</label>
-                <select 
-                  id="category" 
-                  name="category" 
+                <select
+                  id="category"
+                  name="category"
                   value={newEvent.category}
                   onChange={handleInputChange}
                   required
@@ -464,69 +516,69 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
                   <option value="Education">Education</option>
                 </select>
               </div>
-              
+
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="date">Date</label>
-                  <input 
-                    type="date" 
-                    id="date" 
-                    name="date" 
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
                     value={newEvent.date}
                     onChange={handleInputChange}
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="time">Time</label>
-                  <input 
-                    type="time" 
-                    id="time" 
-                    name="time" 
+                  <input
+                    type="time"
+                    id="time"
+                    name="time"
                     value={newEvent.time}
                     onChange={handleInputChange}
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="description">Description</label>
-                <textarea 
-                  id="description" 
-                  name="description" 
+                <textarea
+                  id="description"
+                  name="description"
                   value={newEvent.description}
                   onChange={handleInputChange}
                   placeholder="Describe your event"
                   rows="3"
                 ></textarea>
               </div>
-              
+
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="organizer">Organizer</label>
-                  <input 
-                    type="text" 
-                    id="organizer" 
-                    name="organizer" 
+                  <input
+                    type="text"
+                    id="organizer"
+                    name="organizer"
                     value={newEvent.organizer}
                     onChange={handleInputChange}
                     placeholder="Event organizer"
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label htmlFor="contact">Contact</label>
-                  <input 
-                    type="text" 
-                    id="contact" 
-                    name="contact" 
+                  <input
+                    type="text"
+                    id="contact"
+                    name="contact"
                     value={newEvent.contact}
                     onChange={handleInputChange}
                     placeholder="Contact information"
                   />
                 </div>
               </div>
-              
+
               <div className="form-actions">
                 <button type="button" onClick={() => setShowForm(false)} className="btn-cancel">
                   Cancel
@@ -539,7 +591,7 @@ const MapExplorer = ({ events = [], onEventAdded, onEventDeleted, isAuthenticate
           </div>
         </div>
       )}
-      
+
       <style jsx>{`
         .map-explorer {
           display: flex;
