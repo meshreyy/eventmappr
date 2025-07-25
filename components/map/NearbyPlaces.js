@@ -35,7 +35,7 @@ export default function NearbyPlaces({ userLocation, radius = 1200 }) {
     if (!userLocation) return;
     setLoading(true);
     setError('');
-    const query = `
+   const query = `
   [out:json][timeout:25];
   (
     node["amenity"="restaurant"](around:${radius},${userLocation.lat},${userLocation.lng});

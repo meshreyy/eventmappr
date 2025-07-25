@@ -75,21 +75,29 @@ const SearchBox = dynamic(() => import('../components/map/SearchBox'), { ssr: fa
     })
       .then(res => res.json())
       .then(data => {
-        setLoading(false);
-        if (data && data.elements) {
-          setPlaces(data.elements);
-        } else {
-          setPlaces([]);
-        }
-      })
-      .catch(() => {
-        setLoading(false);
-        setError('Failed to fetch nearby places.');
-      });
-  }, [userLocation]);
+  setLoading(false);
+  if (data && data.elements) {
+    const filteredPlaces = data.elements.filter(el =>
+      el.tags &&
+      (
+        el.tags.amenity === 'restaurant' ||
+        el.tags.tourism === 'hotel'
+      )
+    );
+    setPlaces(filteredPlaces);
+  } else {
+    setPlaces([]);
+  }
+  })
+    .catch(() => {
+      setLoading(false);
+      setError('Failed to fetch nearby places.');
+    });
+}, [userLocation]);
 
-  const handleFindNearby = () => {
-    if (!navigator.geolocation) {
+const handleFindNearby = () => {
+  if (!navigator.geolocation) {
+
       setError('Geolocation is not supported by your browser.');
       return;
     }
@@ -115,7 +123,7 @@ const SearchBox = dynamic(() => import('../components/map/SearchBox'), { ssr: fa
         zIndex: 2,
         marginBottom: '1.5rem',
         textAlign: 'center',
-        color: '#222'
+        color: '#fdfdfd'
       }}>Nearby Restaurants & Hotels</h2>
       <button className="btn-find" onClick={handleFindNearby} disabled={loading}>
         {userLocation ? 'Refresh Location' : 'Find Nearby Places'}
