@@ -1,26 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import 'leaflet/dist/leaflet.css';
-
 
 export default function NearbyPage() {
   const [userLocation, setUserLocation] = useState(null);
-  const MapContainer = dynamic(() =>
-    import('react-leaflet').then(mod => mod.MapContainer),
-    { ssr: false }
-  );
-  const NearbyPlaces = dynamic(
-  () => import('../components/map/NearbyPlaces'),
-  { ssr: false }  // ✅ disables server-side rendering for NearbyPlaces
-);
-const SearchBox = dynamic(() => import('../components/map/SearchBox'), { ssr: false });
-
-
-  const TileLayer = dynamic(() =>
-    import('react-leaflet').then(mod => mod.TileLayer),
-    { ssr: false }
-  );
-
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,17 +20,17 @@ const SearchBox = dynamic(() => import('../components/map/SearchBox'), { ssr: fa
         if (el) {
           const elementPosition = el.getBoundingClientRect().top;
           const screenPosition = window.innerHeight / element.threshold;
-
+          
           if (elementPosition < screenPosition) {
             el.classList.add('animate');
           }
         }
       });
     };
-
+    
     window.addEventListener('scroll', animateOnScroll);
     animateOnScroll(); // Run once on load
-
+    
     return () => {
       window.removeEventListener('scroll', animateOnScroll);
     };
@@ -75,29 +56,21 @@ const SearchBox = dynamic(() => import('../components/map/SearchBox'), { ssr: fa
     })
       .then(res => res.json())
       .then(data => {
-  setLoading(false);
-  if (data && data.elements) {
-    const filteredPlaces = data.elements.filter(el =>
-      el.tags &&
-      (
-        el.tags.amenity === 'restaurant' ||
-        el.tags.tourism === 'hotel'
-      )
-    );
-    setPlaces(filteredPlaces);
-  } else {
-    setPlaces([]);
-  }
-  })
-    .catch(() => {
-      setLoading(false);
-      setError('Failed to fetch nearby places.');
-    });
-}, [userLocation]);
+        setLoading(false);
+        if (data && data.elements) {
+          setPlaces(data.elements);
+        } else {
+          setPlaces([]);
+        }
+      })
+      .catch(() => {
+        setLoading(false);
+        setError('Failed to fetch nearby places.');
+      });
+  }, [userLocation]);
 
-const handleFindNearby = () => {
-  if (!navigator.geolocation) {
-
+  const handleFindNearby = () => {
+    if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser.');
       return;
     }
@@ -123,7 +96,7 @@ const handleFindNearby = () => {
         zIndex: 2,
         marginBottom: '1.5rem',
         textAlign: 'center',
-        color: '#fdfdfd'
+        color: '#fdfd'
       }}>Nearby Restaurants & Hotels</h2>
       <button className="btn-find" onClick={handleFindNearby} disabled={loading}>
         {userLocation ? 'Refresh Location' : 'Find Nearby Places'}
@@ -131,89 +104,37 @@ const handleFindNearby = () => {
       {error && <div style={{ color: 'red', marginTop: '1rem' }}>{error}</div>}
       {loading && <div style={{ marginTop: '1rem' }}>Loading...</div>}
       {!loading && !error && userLocation && (
-        <>
-          {/* 1️⃣ Map block */}
-          <div
-            style={{
-              height: '400px',
-              width: '100%',
-              margin: '2rem 0',
-              borderRadius: '12px',
-              overflow: 'hidden',
-            }}
-          >
-            <MapContainer
-              center={[userLocation.lat, userLocation.lng]}
-              zoom={15}
-              style={{ height: '100%', width: '100%' }}
-              scrollWheelZoom={true}
+        <ul className="nearby-places-list">
+          {places.length === 0 && <li>No nearby places found.</li>}
+          {places.map((place, index) => (
+            <li 
+              key={place.id} 
+              className="nearby-place-item"
+              style={{
+                opacity: 0,
+                transform: `translateY(${(index + 1) * 20}px)`,
+                transition: 'all 0.6s ease',
+                transitionDelay: `${index * 0.1}s`
+              }}
             >
-              <TileLayer
-                attribution='&copy; OpenStreetMap contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <SearchBox onSearch={(coords) => setUserLocation(coords)} />
-              <NearbyPlaces userLocation={userLocation} />
-            </MapContainer>
-          </div>
-
-          {/* 2️⃣ List of place cards */}
-          <ul className="nearby-places-list">
-            {places.length === 0 && <li>No nearby places found.</li>}
-            {places.map((place, index) => (
-              <li
-                key={place.id}
-                className="nearby-place-item"
-                style={{
-                  opacity: 0,
-                  transform: `translateY(${(index + 1) * 20}px)`,
-                  transition: 'all 0.6s ease',
-                  transitionDelay: `${index * 0.1}s`,
-                }}
+              <strong>{place.tags.name || (place.tags.amenity === 'restaurant' ? 'Restaurant' : 'Hotel')}</strong><br/>
+              {place.tags.cuisine && <span>Cuisine: {place.tags.cuisine}<br/></span>}
+              {place.tags['addr:street'] && <span>{place.tags['addr:street']}<br/></span>}
+              {place.tags['addr:city'] && <span>{place.tags['addr:city']}<br/></span>}
+              <span style={{color: '#888'}}>{place.tags.amenity === 'restaurant' ? '🍽️ Restaurant' : '🏨 Hotel'}</span>
+              <br/>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="get-location-btn"
               >
-                <strong>
-                  {place.tags.name ||
-                    (place.tags.amenity === 'restaurant' ? 'Restaurant' : 'Hotel')}
-                </strong>
-                <br />
-                {place.tags.cuisine && (
-                  <span>
-                    Cuisine: {place.tags.cuisine}
-                    <br />
-                  </span>
-                )}
-                {place.tags['addr:street'] && (
-                  <span>
-                    {place.tags['addr:street']}
-                    <br />
-                  </span>
-                )}
-                {place.tags['addr:city'] && (
-                  <span>
-                    {place.tags['addr:city']}
-                    <br />
-                  </span>
-                )}
-                <span style={{ color: '#888' }}>
-                  {place.tags.amenity === 'restaurant'
-                    ? '🍽️ Restaurant'
-                    : '🏨 Hotel'}
-                </span>
-                <br />
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lon}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="get-location-btn"
-                >
-                  Get Location
-                </a>
-              </li>
-            ))}
-          </ul>
-        </>
+                Get Location
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
-
       <style jsx>{`
         .nearby-page {
           max-width: 600px;

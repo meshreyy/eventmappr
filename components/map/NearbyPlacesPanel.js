@@ -29,17 +29,7 @@ export default function NearbyPlacesPanel({ userLocation, onClose }) {
       .then(data => {
         setLoading(false);
         if (data && data.elements) {
-          // Filter to only restaurants and hotels
-          const filtered = data.elements.filter(el =>
-          (el.tags &&
-            (
-              el.tags.amenity === 'restaurant' ||
-              el.tags.tourism === 'hotel'
-            )
-          )
-          );
-
-          setPlaces(filteredPlaces);
+          setPlaces(data.elements);
         } else {
           setPlaces([]);
         }
@@ -60,17 +50,17 @@ export default function NearbyPlacesPanel({ userLocation, onClose }) {
         </div>
         <div className="nearby-modal-content">
           {loading && <div>Loading...</div>}
-          {error && <div style={{ color: 'red' }}>{error}</div>}
+          {error && <div style={{color: 'red'}}>{error}</div>}
           {!loading && !error && places.length === 0 && <div>No nearby places found.</div>}
           {!loading && !error && places.length > 0 && (
             <ul className="nearby-places-list">
               {places.map(place => (
                 <li key={place.id} className="nearby-place-item">
-                  <strong>{place.tags.name || (place.tags.amenity === 'restaurant' ? 'Restaurant' : 'Hotel')}</strong><br />
-                  {place.tags.cuisine && <span>Cuisine: {place.tags.cuisine}<br /></span>}
-                  {place.tags['addr:street'] && <span>{place.tags['addr:street']}<br /></span>}
-                  {place.tags['addr:city'] && <span>{place.tags['addr:city']}<br /></span>}
-                  <span style={{ color: '#888' }}>{place.tags.amenity === 'restaurant' ? '🍽️ Restaurant' : '🏨 Hotel'}</span>
+                  <strong>{place.tags.name || (place.tags.amenity === 'restaurant' ? 'Restaurant' : 'Hotel')}</strong><br/>
+                  {place.tags.cuisine && <span>Cuisine: {place.tags.cuisine}<br/></span>}
+                  {place.tags['addr:street'] && <span>{place.tags['addr:street']}<br/></span>}
+                  {place.tags['addr:city'] && <span>{place.tags['addr:city']}<br/></span>}
+                  <span style={{color: '#888'}}>{place.tags.amenity === 'restaurant' ? '🍽️ Restaurant' : '🏨 Hotel'}</span>
                 </li>
               ))}
             </ul>
