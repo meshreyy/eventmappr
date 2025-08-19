@@ -632,6 +632,41 @@ select {
   color: var(--text);
   caret-color: var(--text);
 }
+.hero-search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  margin: 12px 0;
+  border: 2px solid #5f8eda;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.hero-search-input:focus {
+  border-color: #1d4ed8;
+}
+
+.hero-buttons-wrapper {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  background: #e0e7ff;
+  color: #1e40af;
+  border: 2px solid #a5b4fc;
+  box-shadow: none;
+}
+
+.secondary-button:hover {
+  background: #c7d2fe;
+  border-color: #4338ca;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

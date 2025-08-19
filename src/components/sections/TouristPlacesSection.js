@@ -64,7 +64,45 @@ export default function TouristPlacesSection() {
     );
   };
 
+   const handleSearch = () => {
+    console.log("handleSearch callled");
+    setLoading(true);
+  setError(null);
+  setAttractions([]);
+  setSelectedPlace(null);
+  setStatus("Locating...");
+
+  if (!navigator.geolocation) {
+    setStatus("Geolocation is not supported");
+    setError("Geolocation is not supported by your browser.");
+    setLoading(false);
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords;
+      const location = [latitude, longitude];
+      setUserLocation(location);
+      setStatus(`Location found: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+      fetchAttractions(latitude, longitude)
+        .then(() => setLoading(false))
+        .catch((err) => {
+          setError("Failed to fetch attractions: " + err.message);
+          setLoading(false);
+        });
+    },
+    (error) => {
+      setError("Unable to retrieve your location. Please enable location permissions.");
+      setStatus("Location error: " + error.message);
+      setLoading(false);
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+  };
+
   const fetchAttractions = async (lat, lon) => {
+    
     const query = `[out:json][timeout:25];(node["historic"](around:30000,${lat},${lon}););out body;>;out skel qt;`;
 
     try {
@@ -188,13 +226,12 @@ export default function TouristPlacesSection() {
 
   return (
     <>
-    <div
-      className={`main-content font-sans ${
-        isDarkMode ? "dark-theme" : ""
-      }`}
-      style={{ position: "relative" }}
-    >
-      <style jsx>{`
+      <div
+        className={`main-content font-sans ${isDarkMode ? "dark-theme" : ""
+          }`}
+        style={{ position: "relative" }}
+      >
+        <style jsx>{`
         /* Clean Modern Variables */
         :root {
           --blue-50: #eff6ff;
@@ -274,9 +311,9 @@ export default function TouristPlacesSection() {
         }
 
         .hero-button {
-          background: var(black);
-          color: white;
-          border: none;
+          background: #82aae9ff;
+          color: black;
+          border: 2px solid #5f8edaff;
           padding: 14px 28px;
           border-radius: 12px;
           font-size: 1rem;
@@ -286,7 +323,7 @@ export default function TouristPlacesSection() {
           gap: 8px;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 0 2px #457dd6ff;
         }
 
         .hero-button:hover {
@@ -750,154 +787,177 @@ export default function TouristPlacesSection() {
           color: var(--neutral-400);
         }
       `}</style>
-      <div className="hero-section">
-        <video
-          className="hero-video"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source
-            src="https://videos.pexels.com/video-files/5243307/5243307-hd_1280_720_25fps.mp4"
-            type="video/mp4"
-          />
-        </video>
-        <div className="hero-overlay"></div>
-        <div className="hero-content" ref={headerRef}>
-          <div className="hero-card">
-            <h1 className="hero-title">Historical Places Explorer</h1>
-            <p className="hero-subtitle">
-              Discover fascinating historical landmarks and cultural sites near you.
-              Explore centuries of history right in your neighborhood.
-            </p>
-            <button
-              onClick={handleFindAttractions}
-              disabled={loading}
-              className="hero-button"
-            >
-              {loading ? (
-                <>
-                  <FiLoader className="animate-spin" size={20} />
-                  <span>Searching...</span>
-                </>
-              ) : (
-                <>
-                  <FiCompass size={20} />
-                  <span>Find Places Near Me</span>
-                </>
-              )}
-            </button>
+        <div className="hero-section">
+          <video
+            className="hero-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source
+              src="https://videos.pexels.com/video-files/5243307/5243307-hd_1280_720_25fps.mp4"
+              type="video/mp4"
+            />
+          </video>
+          <div className="hero-overlay"></div>
+          <div className="hero-content" ref={headerRef}>
+            <div className="hero-card">
+              <h1 className="hero-title">Historical Places Explorer</h1>
+              <p className="hero-subtitle">
+                Discover fascinating historical landmarks and cultural sites near you.
+                Explore centuries of history right in your neighborhood.
+              </p>
+
+              <input
+                type="text"
+                placeholder="Search for a place..."
+                className="hero-search-input"
+              />
+            
+              <button
+                onClick={handleFindAttractions}
+                disabled={loading}
+                className="hero-button"
+              >
+                {loading ? (
+                  <>
+                    <FiLoader className="animate-spin" size={20} />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <FiCompass size={20} />
+                    <span>Find Places Near Me</span>
+
+                  </>
+                )}
+              </button>
+              &nbsp; &nbsp; &nbsp; &nbsp;
+              <button
+                onClick={handleSearch}
+                disabled={loading}
+                className="hero-button"
+              >
+                {loading ? (
+                  <>
+                    <FiLoader className="animate-spin" size={20} />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <FiCompass size={20} />
+                    <span>Search</span>
+
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="tourist-places-container">
-        {/* Sidebar */}
-        <div className="tp-sidebar">
-          <div className="sidebar-header">
-            <h2 className="sidebar-title">
-              <FiNavigation /> Nearby Places
-            </h2>
-            <p className="status-text">{status}</p>
-          </div>
-
-          {error && (
-            <div className="error-alert">
-              <FiAlertCircle size={20} />
-              <span>{error}</span>
+        {/* Main Content */}
+        <div className="tourist-places-container">
+          {/* Sidebar */}
+          <div className="tp-sidebar">
+            <div className="sidebar-header">
+              <h2 className="sidebar-title">
+                <FiNavigation /> Nearby Places
+              </h2>
+              <p className="status-text">{status}</p>
             </div>
-          )}
 
-          <div className="list-places">
-            {loading && attractions.length === 0 && (
-              <div className="loading-state">
-                <FiLoader className="loading-spinner animate-spin" size={32} />
-                <p>Discovering historical places near you...</p>
+            {error && (
+              <div className="error-alert">
+                <FiAlertCircle size={20} />
+                <span>{error}</span>
               </div>
             )}
 
-            {!loading && attractions.length === 0 && !error && (
-              <div className="empty-state">
-                <FiMapPin
-                  size={48}
-                  style={{
-                    margin: "0 auto 16px",
-                    display: "block",
-                    color: "var(--neutral-400)"
-                  }}
-                />
-                <p><strong>No places found yet</strong></p>
-                <p>Click the search button above to find historical places near your location.</p>
-              </div>
-            )}
+            <div className="list-places">
+              {loading && attractions.length === 0 && (
+                <div className="loading-state">
+                  <FiLoader className="loading-spinner animate-spin" size={32} />
+                  <p>Discovering historical places near you...</p>
+                </div>
+              )}
 
-            <ul className="tp-list-grid">
-              {attractions.map((place, index) => (
-                <li key={place.id}>
-                  <div
-                    className={`tp-list-card${
-                      selectedPlace?.id === place.id ? " selected" : ""
-                    }`}
-                    onClick={() => setSelectedPlace(place)}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <div className="place-header">
-                      <div className="place-map-container">
-                        <iframe
-                          title={place.name}
-                          width="80"
-                          height="80"
-                          frameBorder="0"
-                          src={`https://www.openstreetmap.org/export/embed.html?bbox=${
-                            place.position[1] - 0.005
-                          }%2C${place.position[0] - 0.005}%2C${
-                            place.position[1] + 0.005
-                          }%2C${place.position[0] + 0.005}&layer=mapnik&marker=${
-                            place.position[0]
-                          }%2C${place.position[1]}`}
-                          allowFullScreen=""
-                          loading="lazy"
-                        />
-                        <span className="map-pin-icon">
-                          <FiMapPin size={16} />
-                        </span>
-                      </div>
+              {!loading && attractions.length === 0 && !error && (
+                <div className="empty-state">
+                  <FiMapPin
+                    size={48}
+                    style={{
+                      margin: "0 auto 16px",
+                      display: "block",
+                      color: "var(--neutral-400)"
+                    }}
+                  />
+                  <p><strong>No places found yet</strong></p>
+                  <p>Click the search button above to find historical places near your location.</p>
+                </div>
+              )}
 
-                      <div className="place-info">
-                        <h3 className="place-title">{place.name}</h3>
-                        <div className="place-meta">
-                          <span className="place-type-badge">
-                            {place.type.replace(/_/g, " ")}
-                          </span>
-                          <span className="place-distance">
-                             ◦ Historic Site
+              <ul className="tp-list-grid">
+                {attractions.map((place, index) => (
+                  <li key={place.id}>
+                    <div
+                      className={`tp-list-card${selectedPlace?.id === place.id ? " selected" : ""
+                        }`}
+                      onClick={() => setSelectedPlace(place)}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="place-header">
+                        <div className="place-map-container">
+                          <iframe
+                            title={place.name}
+                            width="80"
+                            height="80"
+                            frameBorder="0"
+                            src={`https://www.openstreetmap.org/export/embed.html?bbox=${place.position[1] - 0.005
+                              }%2C${place.position[0] - 0.005}%2C${place.position[1] + 0.005
+                              }%2C${place.position[0] + 0.005}&layer=mapnik&marker=${place.position[0]
+                              }%2C${place.position[1]}`}
+                            allowFullScreen=""
+                            loading="lazy"
+                          />
+                          <span className="map-pin-icon">
+                            <FiMapPin size={16} />
                           </span>
                         </div>
+
+                        <div className="place-info">
+                          <h3 className="place-title">{place.name}</h3>
+                          <div className="place-meta">
+                            <span className="place-type-badge">
+                              {place.type.replace(/_/g, " ")}
+                            </span>
+                            <span className="place-distance">
+                              ◦ Historic Site
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="place-actions">
+                        <a
+                          className="directions-link"
+                          href={`https://www.google.com/maps/search/?api=1&query=${place.position[0]},${place.position[1]}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <FiExternalLink size={16} />
+                          Get Directions
+                        </a>
                       </div>
                     </div>
-
-                    <div className="place-actions">
-                      <a
-                        className="directions-link"
-                        href={`https://www.google.com/maps/search/?api=1&query=${place.position[0]},${place.position[1]}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FiExternalLink size={16} />
-                        Get Directions
-                      </a>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 }

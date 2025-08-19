@@ -15,7 +15,7 @@ const CategoriesSection = () => {
         }
       });
     };
-    
+      
     window.addEventListener('scroll', animateOnScroll);
     animateOnScroll(); // Run once on load
     

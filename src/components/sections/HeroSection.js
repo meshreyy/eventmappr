@@ -18,6 +18,7 @@ const HeroSection = () => {
       
       // Sample event data
       const events = [
+        
         { lat: 40.7128, lng: -74.0060, title: "Tech Meetup", category: "tech" },
         { lat: 40.7200, lng: -73.9950, title: "Jazz Concert", category: "music" },
         { lat: 40.7080, lng: -74.0100, title: "Community Cleanup", category: "volunteer" },
