@@ -20,6 +20,8 @@ const TouristPlacesMap = dynamic(() => import("./TouristPlacesMap"), {
 export default function TouristPlacesSection() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingFind, setLoadingFind] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
   const [attractions, setAttractions] = useState([]);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(
@@ -30,7 +32,7 @@ export default function TouristPlacesSection() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleFindAttractions = () => {
-    setLoading(true);
+    setLoadingFind(true);
     setError(null);
     setAttractions([]);
     setSelectedPlace(null);
@@ -38,7 +40,7 @@ export default function TouristPlacesSection() {
     if (!navigator.geolocation) {
       setStatus("Geolocation not supported.");
       setError("Geolocation is not supported by your browser.");
-      setLoading(false);
+      setLoadingFind(false);
       return;
     }
 
@@ -58,7 +60,7 @@ export default function TouristPlacesSection() {
           "Unable to retrieve your location. Please enable location permissions."
         );
         setStatus("Location error: " + err.message);
-        setLoading(false);
+        setLoadingFind(false);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -66,7 +68,7 @@ export default function TouristPlacesSection() {
 
    const handleSearch = () => {
     console.log("handleSearch callled");
-    setLoading(true);
+    setLoadingSearch(true);
   setError(null);
   setAttractions([]);
   setSelectedPlace(null);
@@ -75,7 +77,7 @@ export default function TouristPlacesSection() {
   if (!navigator.geolocation) {
     setStatus("Geolocation is not supported");
     setError("Geolocation is not supported by your browser.");
-    setLoading(false);
+    setLoadingSearch(false);
     return;
   }
 
@@ -86,16 +88,16 @@ export default function TouristPlacesSection() {
       setUserLocation(location);
       setStatus(`Location found: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
       fetchAttractions(latitude, longitude)
-        .then(() => setLoading(false))
+        .then(() => setLoadingSearch(false))
         .catch((err) => {
           setError("Failed to fetch attractions: " + err.message);
-          setLoading(false);
+          setLoadingSearch(false);
         });
     },
     (error) => {
       setError("Unable to retrieve your location. Please enable location permissions.");
       setStatus("Location error: " + error.message);
-      setLoading(false);
+      setLoadingSearch(false);
     },
     { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
   );
@@ -103,7 +105,7 @@ export default function TouristPlacesSection() {
 
   const fetchAttractions = async (lat, lon) => {
     
-    const query = `[out:json][timeout:25];(node["historic"](around:30000,${lat},${lon}););out body;>;out skel qt;`;
+    const query = `[out:json][timeout:25];(node["historic"](around:30000,${lat},${lon}););out body;`;
 
     try {
       const response = await fetch("https://overpass-api.de/api/interpreter", {
@@ -817,10 +819,10 @@ export default function TouristPlacesSection() {
             
               <button
                 onClick={handleFindAttractions}
-                disabled={loading}
+                disabled={loadingFind}
                 className="hero-button"
               >
-                {loading ? (
+                {loadingFind ? (
                   <>
                     <FiLoader className="animate-spin" size={20} />
                     <span>Searching...</span>
@@ -836,10 +838,10 @@ export default function TouristPlacesSection() {
               &nbsp; &nbsp; &nbsp; &nbsp;
               <button
                 onClick={handleSearch}
-                disabled={loading}
+                disabled={loadingSearch}
                 className="hero-button"
               >
-                {loading ? (
+                {loadingSearch ? (
                   <>
                     <FiLoader className="animate-spin" size={20} />
                     <span>Searching...</span>
