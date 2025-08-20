@@ -30,8 +30,28 @@ export default function TouristPlacesSection() {
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
+const [inputValue, setInputValue] = useState("");
 
-  const handleFindAttractions = () => {
+
+   async function getCoordinates(placeName) {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(placeName)}&limit=1`
+    );
+    if(!response.ok) throw new Error(`Nominatim API error: ${response.status}`)
+    const data = await response.json();
+
+    console.log("Nominatim response:",data);
+
+    if (!data.length) throw new Error("Place not found");
+    return {
+      latitude: parseFloat(data[0].lat),
+      longitude: parseFloat(data[0].lon),
+    };
+  }
+
+  const handleFindAttractions = async () => {
+    
     setLoadingFind(true);
     setError(null);
     setAttractions([]);
@@ -45,15 +65,17 @@ export default function TouristPlacesSection() {
     }
 
     setStatus("Getting your location...");
+
+
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+     async (position) => {
         const { latitude, longitude } = position.coords;
         const location = [latitude, longitude];
         setUserLocation(location);
         setStatus(
           `Location found: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
         );
-        fetchAttractions(latitude, longitude);
+         await fetchAttractions(latitude, longitude);
       },
       (err) => {
         setError(
@@ -66,45 +88,41 @@ export default function TouristPlacesSection() {
     );
   };
 
-   const handleSearch = () => {
-    console.log("handleSearch callled");
-    setLoadingSearch(true);
+   const handleSearch = async () => {
+    console.log("search button clicked");
+    if (!inputValue.trim()) return;
+
+    console.log("Fetching Nominatim for:", searchInput.trim());
+    const url= `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchInput.trim())}&limit=1`;
+    console.log("Nominatim URL:",url);
+
+  setLoadingSearch(true);
   setError(null);
   setAttractions([]);
   setSelectedPlace(null);
-  setStatus("Locating...");
+  setStatus("Finding location...");
 
-  if (!navigator.geolocation) {
-    setStatus("Geolocation is not supported");
-    setError("Geolocation is not supported by your browser.");
+  try {
+   
+    const coords = await getCoordinates(searchInput.trim());
+    console.log("coords found:",coords);
+    setUserLocation([coords.latitude, coords.longitude]);
+    setStatus(`Location found: ${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`);
+
+    // Fetch attractions using these coordinates
+    await fetchAttractions(coords.latitude, coords.longitude);
+  } catch (err) {
+    console.error("search error:",err);
+    setError(err.message || "Failed to find location.");
+    setStatus("Error fetching data");
+  } finally {
     setLoadingSearch(false);
-    return;
   }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      const location = [latitude, longitude];
-      setUserLocation(location);
-      setStatus(`Location found: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-      fetchAttractions(latitude, longitude)
-        .then(() => setLoadingSearch(false))
-        .catch((err) => {
-          setError("Failed to fetch attractions: " + err.message);
-          setLoadingSearch(false);
-        });
-    },
-    (error) => {
-      setError("Unable to retrieve your location. Please enable location permissions.");
-      setStatus("Location error: " + error.message);
-      setLoadingSearch(false);
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
   };
 
   const fetchAttractions = async (lat, lon) => {
     
+    console.log("Lat:",lat,"Lon:",lon);
     const query = `[out:json][timeout:25];(node["historic"](around:30000,${lat},${lon}););out body;`;
 
     try {
@@ -113,11 +131,15 @@ export default function TouristPlacesSection() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `data=${encodeURIComponent(query)}`,
       });
+      
 
       if (!response.ok)
+      {
+        
         throw new Error(`Network response was not ok (${response.status})`);
-
+      }
       const data = await response.json();
+      
       const formatted = data.elements
         .filter((e) => e.tags && e.tags.name)
         .map((e) => ({
@@ -138,12 +160,12 @@ export default function TouristPlacesSection() {
           : "No historical places found within 5km."
       );
     } catch (err) {
+      
       setError(
         "Failed to fetch attractions. The service might be temporarily unavailable."
       );
       setStatus("Error fetching data");
-    } finally {
-      setLoading(false);
+   throw err;
     }
   };
 
@@ -815,6 +837,12 @@ export default function TouristPlacesSection() {
                 type="text"
                 placeholder="Search for a place..."
                 className="hero-search-input"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if(e.key==='Enter') handleSearch();
+                }}
+                disabled={loadingSearch}
               />
             
               <button
@@ -838,7 +866,7 @@ export default function TouristPlacesSection() {
               &nbsp; &nbsp; &nbsp; &nbsp;
               <button
                 onClick={handleSearch}
-                disabled={loadingSearch}
+                disabled={loadingSearch || !searchInput.trim()}
                 className="hero-button"
               >
                 {loadingSearch ? (
